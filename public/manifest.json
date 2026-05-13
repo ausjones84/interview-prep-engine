@@ -1,0 +1,35 @@
+{
+  "name": "Interview Prep Engine",
+  "short_name": "Interview Prep",
+  "description": "AI-powered interview prep by Big Aus — MrCeesAI | TechPassport",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1e",
+  "theme_color": "#0a0f1e",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "New Role",
+      "short_name": "New Role",
+      "description": "Add a new job role to prep for",
+      "url": "/new-role",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
