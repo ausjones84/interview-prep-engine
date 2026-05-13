@@ -3,27 +3,27 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Calendar, Clock, CheckCircle, Circle, Zap, Star, Trophy } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Circle, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { Role } from "@/types";
 
 const CHECKLIST_ITEMS = [
-  { id: "study_guide", label: "Read study guide (focus on role overview + top 5 questions)", category: "prep" },
+  { id: "study_guide", label: "Read study guide - focus on role overview and top 5 questions", category: "prep" },
   { id: "star_review", label: "Review your 10 STAR scenarios out loud", category: "prep" },
   { id: "acronyms", label: "Flash through the acronyms cheat sheet", category: "prep" },
-  { id: "mock_5", label: "Do a 5-question mock interview", category: "practice" },
+  { id: "mock_5", label: "Do a 5-question mock interview session", category: "practice" },
   { id: "company_research", label: "Re-read company intelligence brief", category: "research" },
   { id: "questions_ready", label: "Prepare your 3-5 questions to ask them", category: "research" },
-  { id: "outfit", label: "Outfit ready / background clean (video)", category: "logistics" },
-  { id: "tech_check", label: "Test mic, camera, internet speed", category: "logistics" },
-  { id: "linkedin", label: "LinkedIn profile updated + profile pic professional", category: "logistics" },
-  { id: "resume_printed", label: "Resume printed / digital copy ready", category: "logistics" },
-  { id: "sleep", label: "8 hours sleep the night before", category: "mindset" },
+  { id: "outfit", label: "Outfit ready / background clean for video", category: "logistics" },
+  { id: "tech_check", label: "Test mic, camera, and internet speed", category: "logistics" },
+  { id: "linkedin", label: "LinkedIn profile updated + professional profile picture", category: "logistics" },
+  { id: "resume_printed", label: "Resume printed or digital copy ready", category: "logistics" },
+  { id: "sleep", label: "Get 8 hours of sleep the night before", category: "mindset" },
   { id: "power_pose", label: "2-min power pose + deep breathing before interview", category: "mindset" },
-  { id: "affirmations", label: ""I am prepared. I am the candidate they need."", category: "mindset" },
-  { id: "audio_listen", label: "Listen to audio study guide during commute/before", category: "prep" },
-  { id: "salary_ready", label: "Know your number + negotiation floor", category: "salary" },
+  { id: "affirmations", label: "Affirm: I am prepared. I am the candidate they need.", category: "mindset" },
+  { id: "audio_listen", label: "Listen to audio study guide during commute or before", category: "prep" },
+  { id: "salary_ready", label: "Know your number and negotiation floor", category: "salary" },
 ];
 
 export default function InterviewDayPage() {
@@ -40,18 +40,17 @@ export default function InterviewDayPage() {
     supabase.from("roles").select("*").eq("id", id).single().then(({ data }) => {
       if (data) setRole(data);
     });
-    // Load saved checklist from localStorage
-    const saved = localStorage.getItem(`interview-checklist-${id}`);
+    const saved = localStorage.getItem("interview-checklist-" + id);
     if (saved) setChecked(new Set(JSON.parse(saved)));
-    const savedDate = localStorage.getItem(`interview-date-${id}`);
+    const savedDate = localStorage.getItem("interview-date-" + id);
     if (savedDate) setInterviewDate(savedDate);
-    const savedTime = localStorage.getItem(`interview-time-${id}`);
+    const savedTime = localStorage.getItem("interview-time-" + id);
     if (savedTime) setInterviewTime(savedTime);
   }, [id]);
 
   useEffect(() => {
     if (interviewDate) {
-      const dateStr = interviewTime ? `${interviewDate}T${interviewTime}` : interviewDate;
+      const dateStr = interviewTime ? interviewDate + "T" + interviewTime : interviewDate;
       const target = new Date(dateStr);
       const now = new Date();
       const diff = target.getTime() - now.getTime();
@@ -62,8 +61,8 @@ export default function InterviewDayPage() {
         setDaysLeft(0);
         setHoursLeft(0);
       }
-      localStorage.setItem(`interview-date-${id}`, interviewDate);
-      if (interviewTime) localStorage.setItem(`interview-time-${id}`, interviewTime);
+      localStorage.setItem("interview-date-" + id, interviewDate);
+      if (interviewTime) localStorage.setItem("interview-time-" + id, interviewTime);
     }
   }, [interviewDate, interviewTime, id]);
 
@@ -78,19 +77,19 @@ export default function InterviewDayPage() {
           setTimeout(() => setShowCelebration(false), 3000);
         }
       }
-      localStorage.setItem(`interview-checklist-${id}`, JSON.stringify([...next]));
+      localStorage.setItem("interview-checklist-" + id, JSON.stringify([...next]));
       return next;
     });
   }
 
   const progress = (checked.size / CHECKLIST_ITEMS.length) * 100;
-  const categories = {
-    prep: { label: "📚 Prep Work", color: "text-blue-400" },
-    practice: { label: "🎯 Practice", color: "text-purple-400" },
-    research: { label: "🔍 Research", color: "text-yellow-400" },
-    logistics: { label: "📋 Logistics", color: "text-green-400" },
-    mindset: { label: "🧠 Mindset", color: "text-orange-400" },
-    salary: { label: "💰 Salary", color: "text-emerald-400" },
+  const categories: Record<string, { label: string; color: string }> = {
+    prep: { label: "Study Prep", color: "text-blue-400" },
+    practice: { label: "Practice", color: "text-purple-400" },
+    research: { label: "Research", color: "text-yellow-400" },
+    logistics: { label: "Logistics", color: "text-green-400" },
+    mindset: { label: "Mindset", color: "text-orange-400" },
+    salary: { label: "Salary", color: "text-emerald-400" },
   };
 
   const groupedItems = Object.entries(categories).map(([cat, info]) => ({
@@ -122,7 +121,6 @@ export default function InterviewDayPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-5">
-        {/* Celebration */}
         <AnimatePresence>
           {showCelebration && (
             <motion.div
@@ -134,7 +132,7 @@ export default function InterviewDayPage() {
               <div className="bg-brand-900 border-2 border-brand-500 rounded-2xl p-8 text-center shadow-2xl">
                 <Trophy size={48} className="text-yellow-400 mx-auto mb-3" />
                 <p className="text-2xl font-bold text-white">YOU ARE READY!</p>
-                <p className="text-brand-300 mt-1">Go crush that interview! 🚀</p>
+                <p className="text-brand-300 mt-1">Go crush that interview!</p>
               </div>
             </motion.div>
           )}
@@ -161,7 +159,7 @@ export default function InterviewDayPage() {
             />
           </div>
           {daysLeft !== null && (
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-6 justify-center">
               <div className="text-center">
                 <p className={`text-3xl font-bold ${daysLeft <= 1 ? "text-red-400" : daysLeft <= 3 ? "text-yellow-400" : "text-brand-400"}`}>{daysLeft}</p>
                 <p className="text-xs text-gray-500">days</p>
@@ -170,16 +168,16 @@ export default function InterviewDayPage() {
                 <p className={`text-3xl font-bold ${daysLeft <= 1 ? "text-red-400" : "text-gray-400"}`}>{hoursLeft}</p>
                 <p className="text-xs text-gray-500">hours</p>
               </div>
-              <div className="text-center">
-                <p className={`text-xl font-bold ${daysLeft === 0 ? "text-red-400 animate-pulse" : "text-gray-600"}`}>
-                  {daysLeft === 0 ? "TODAY" : daysLeft <= 1 ? "TOMORROW" : ""}
-                </p>
-              </div>
+              {daysLeft === 0 && (
+                <div className="flex items-center">
+                  <p className="text-xl font-bold text-red-400 animate-pulse">TODAY!</p>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Checklist by category */}
+        {/* Checklist */}
         {groupedItems.map(({ label, color, items }) => (
           <div key={label} className="bg-dark-800 rounded-2xl border border-dark-600 overflow-hidden">
             <div className="px-4 py-3 border-b border-dark-600">
@@ -206,10 +204,9 @@ export default function InterviewDayPage() {
           </div>
         ))}
 
-        {/* Power reminder */}
         <div className="bg-gradient-to-r from-brand-900/40 to-purple-900/40 rounded-2xl p-5 border border-brand-700/40 text-center">
           <Zap size={24} className="text-yellow-400 mx-auto mb-2" />
-          <p className="text-white font-semibold">"The interview starts before you walk in the door."</p>
+          <p className="text-white font-semibold">The interview starts before you walk in the door.</p>
           <p className="text-gray-400 text-sm mt-1">Your preparation separates you from every other candidate.</p>
         </div>
       </main>
