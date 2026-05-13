@@ -1,4 +1,4 @@
--- Interview Prep Engine - Supabase Schema
+-- Interview Prep Engine v2 — Supabase Schema
 -- Run this in your Supabase SQL Editor
 
 -- Enable UUID extension
@@ -59,14 +59,35 @@ CREATE TABLE IF NOT EXISTS mock_sessions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Job Readiness Score table (inspired by Tech Passport)
+CREATE TABLE IF NOT EXISTS readiness_scores (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  role_id UUID REFERENCES roles(id) ON DELETE CASCADE UNIQUE,
+  user_id TEXT NOT NULL DEFAULT 'default',
+  overall_score INTEGER DEFAULT 0,
+  knowledge_coverage INTEGER DEFAULT 0,
+  self_awareness INTEGER DEFAULT 0,
+  practice_readiness INTEGER DEFAULT 0,
+  confidence_level INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'Not Started',
+  next_actions JSONB DEFAULT '[]',
+  strengths JSONB DEFAULT '[]',
+  gaps JSONB DEFAULT '[]',
+  calculated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_roles_user_id ON roles(user_id);
 CREATE INDEX IF NOT EXISTS idx_study_guides_role_id ON study_guides(role_id);
 CREATE INDEX IF NOT EXISTS idx_audio_library_role_id ON audio_library(role_id);
 CREATE INDEX IF NOT EXISTS idx_mock_sessions_role_id ON mock_sessions(role_id);
+CREATE INDEX IF NOT EXISTS idx_readiness_scores_role_id ON readiness_scores(role_id);
 
--- Row Level Security (optional - enable if using auth)
--- ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE study_guides ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE audio_library ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE mock_sessions ENABLE ROW LEVEL SECURITY;
+-- Storage: Create 'audio' bucket
+-- Go to Storage → Create bucket → name: audio → Public: YES
+-- (Cannot be done via SQL — do it in Supabase dashboard)
+
+-- Sample data to test (optional — delete before production)
+-- INSERT INTO roles (title, company, job_description) VALUES 
+-- ('Senior Cloud Engineer', 'Anata', 'AWS infrastructure, Terraform, Kubernetes...');
